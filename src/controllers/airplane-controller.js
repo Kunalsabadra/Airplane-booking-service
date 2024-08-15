@@ -46,7 +46,6 @@ async function getAirplanes(req, res) {
  */
 async function getAirplane(req, res) {
     try {
-        //  let id = req.param.id;
         const airplane = await AirplaneService.getAirplane(req.params.id);
         SuccessReponse.data = airplane;
         return res.status(StatusCodes.OK)
@@ -77,9 +76,33 @@ async function deleteAirplane(req, res) {
     }
 }
 
+/**
+ * PATCH : /airplanes/:id
+ * req-body {modelNumber: 'air23' , capacity:189}
+ */
+async function updateAirplane(req, res) {
+    try {
+        let id = req.params.id;
+        let data = {
+            modelNumber: req.body.modelNumber,
+            capacity: req.body.capacity
+        }
+        const airplane = await AirplaneService.updateAirplane(id, data);
+        SuccessReponse.data = airplane;
+        return res.status(StatusCodes.OK)
+            .json(SuccessReponse)
+    }
+    catch (err) {
+        ErrorResponse.error = err;
+        return res.status(err.statusCode)
+            .json(ErrorResponse)
+    }
+}
+
 module.exports = {
     createAirplane,
     getAirplanes,
     getAirplane,
-    deleteAirplane
+    deleteAirplane,
+    updateAirplane
 }
