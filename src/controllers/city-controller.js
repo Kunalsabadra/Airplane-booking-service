@@ -85,7 +85,7 @@ async function updateCity(req, res) {
         let data = {
             name: req.body.name
         }
-        const city = await AirplaneService.updateAirplane(id, data);
+        const city = await CityService.updateCity(id, data);
         SuccessReponse.data = city;
         return res.status(StatusCodes.OK)
             .json(SuccessReponse)
