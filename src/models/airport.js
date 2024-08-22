@@ -14,6 +14,14 @@ module.exports = (sequelize, DataTypes) => {
       this.belongsTo(models.City, {
         foreignKey: 'cityId',
         onDelete: 'CASCADE'
+      });
+      this.hasMany(models.Airport, {
+        foreignKey: 'departureAirportId',
+        onDelete: 'CASCADE'
+      });
+      this.hasMany(models.Airport, {
+        foreignKey: 'arrivalAirportId',
+        onDelete: 'CASCADE'
       })
     }
   }
