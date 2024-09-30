@@ -26,6 +26,8 @@ async function createFlight(data) {
 
 async function getAllFlights(query) {
     let customFilter = {};
+    const endingTripTime = "23:59:00";
+    let sortFilter = [];
     //trips = MUM-DEL
     if (query.trips) {
         let trips = query.trips;
@@ -38,18 +40,35 @@ async function getAllFlights(query) {
         let price = query.price;
         [minPrice, maxPrice] = price.split('-');
         customFilter.price = {
-            [Op.between]: [minPrice, maxPrice]
+            [Op.between]: [minPrice, (maxPrice === undefined) ? 20000 : maxPrice]
         }
     }
+    if (query.travellers) {
+        customFilter.totalSeats =
+        {
+            [Op.gte]: query.travellers
+        }
+    }
+    if (query.tripDate) {
+        customFilter.departureTime = {
+            [Op.between]: [query.tripDate, query.tripDate + endingTripTime]
+        }
+    }
+    if (query.sort) {
+        const params = query.sort.split(',');
+        const sortFilters = params.map((param) => param.split('_'));
+        sortFilter = sortFilters
+    }
+
     try {
-        const flights = await flightRepository.getAllFlights(customFilter);
+        const flights = await flightRepository.getAllFlights(customFilter, sortFilter);
         return flights;
     }
     catch (error) {
         if (error.statusCode = StatusCodes.NOT_FOUND) {
-            throw new AppError('The airport you requested is not present', error.statusCode);
+            throw new AppError('The flight you requested is not present', error.statusCode);
         }
-        throw new AppError('Cannot get data of requested airport', StatusCodes.INTERNAL_SERVER_ERROR);
+        throw new AppError('Cannot get data of requested flight', StatusCodes.INTERNAL_SERVER_ERROR);
     }
 }
 
